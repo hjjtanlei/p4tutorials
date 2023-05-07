@@ -224,10 +224,11 @@ control MyEgress(inout headers hdr,
         byte_cnt_reg.write((bit<32>)standard_metadata.egress_port, new_byte_cnt);
 
         if (hdr.probe.isValid()) {
-            // fill out probe fields
-            hdr.probe_data.push_front(1);// 头部插入
+            // fill out probe fields// 头部插入
+            hdr.probe_data.push_front(1);
             hdr.probe_data[0].setValid();
-            if (hdr.probe.hop_cnt == 1) { // 经过第一个switch时，标识了probe_data 结束，probe_fwd的开始，在解析时需要知道啥时候开始解析fwd
+            // 经过第一个switch时，标识了probe_data 结束，probe_fwd的开始，在解析时需要知道啥时候开始解析fwd, probe_fwd 是静态设置，已经封装在包中了，包在流转时直接进行读取
+            if (hdr.probe.hop_cnt == 1) { 
                 hdr.probe_data[0].bos = 1;
             }
             else {
@@ -236,11 +237,11 @@ control MyEgress(inout headers hdr,
             // set switch ID field
             swid.apply();
             // TODO: fill out the rest of the probe packet fields
-            hdr.probe_data[0].port = standard_metadata.egress_port;
-            hdr.probe_data[0].byte_cnt = new_byte_cnt;
+            hdr.probe_data[0].port =  (bit<8>)standard_metadata.egress_port;
+            hdr.probe_data[0].byte_cnt = byte_cnt;
             // TODO: read / update the last_time_reg
-            last_time_reg.read(last_time, bit<32>)standard_metadata.egress_port);
-            last_time_reg.write(bit<32>)standard_metadata.egress_port, cur_time);
+            last_time_reg.read(last_time,(bit<32>)standard_metadata.egress_port);
+            last_time_reg.write((bit<32>)standard_metadata.egress_port, cur_time);
             hdr.probe_data[0].last_time = last_time;
             hdr.probe_data[0].cur_time = cur_time;
         }
