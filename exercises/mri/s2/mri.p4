@@ -109,24 +109,28 @@ parser MyParser(packet_in packet,
     }
 
     state parse_ipv4_option {
-          packet.extract(hdr.ipv4_option);
-          if (hdr.ipv4_option.option==IPV4_OPTION_MRI){
-             transition parse_mri;
-          }
+        packet.extract(hdr.ipv4_option);
+       
+        transition select(hdr.ipv4_option.option) {
+            IPV4_OPTION_MRI    : parse_mri;
+            default            : accept;
+        }
+        
         /*
         * TODO: Add logic to:
         * - Extract the ipv4_option header.
         *   - If value is equal to IPV4_OPTION_MRI, transition to parse_mri.
         *   - Otherwise, accept.
-        */
-        transition accept;
+        */ 
     }
 
     state parse_mri {
         packet.extract(hdr.mri);
         meta.parser_metadata.remaining= hdr.mri.count;
-        if ( hdr.mri.count>0){
-            transition parse_swtrace;
+     
+        transition select(hdr.ipv4_option.count) {
+            0           : accept;
+            default     : parse_swtrace;
         }
         /*
         * TODO: Add logic to:
@@ -136,14 +140,16 @@ parser MyParser(packet_in packet,
         *   - If the value is equal to 0, accept.
         *   - Otherwise, transition to parse_swtrace.
         */
-        transition accept;
+      
     }
 
     state parse_swtrace {
         packet.extract(hdr.swtraces.next);
         meta.parser_metadata.remaining=meta.parser_metadata.remaining-1;
-         if (meta.parser_metadata.remaining>0){
-            transition parse_swtrace;
+     
+        transition select(meta.parser_metadata.remaining) {
+            0           : accept;
+            default     : parse_swtrace;
         }
         /*
         * TODO: Add logic to:
@@ -154,8 +160,7 @@ parser MyParser(packet_in packet,
         *   - Otherwise, transition to parse_swtrace.
         */
 
-
-        transition accept;
+ 
     }
 }
 
