@@ -128,7 +128,7 @@ parser MyParser(packet_in packet,
         packet.extract(hdr.mri);
         meta.parser_metadata.remaining= hdr.mri.count;
      
-        transition select(hdr.ipv4_option.count) {
+        transition select(hdr.mri.count) {
             0           : accept;
             default     : parse_swtrace;
         }
