@@ -106,8 +106,8 @@ control MyIngress(inout headers hdr,
 
         hash(meta.ecmp_select, HashAlgorithm.crc16, (bit<16>)ecmp_base, {hdr.ipv4.srcAddr,
                                                            hdr.ipv4.dstAddr,
-                                                           hdr.ipv4.tcp.srcPort,
-                                                           hdr.ipv4.tcp.dstPort,
+                                                           hdr.tcp.srcPort,
+                                                           hdr.tcp.dstPort,
                                                            hdr.ipv4.protocol},
                                                            (bit<32>)ecmp_count);
        
@@ -146,7 +146,7 @@ control MyIngress(inout headers hdr,
          */
 
         if (hdr.ipv4.isValid() && hdr.ipv4.ttl>0){
-            if (hdr.ipv4.tcp.isValid()){
+            if (hdr.tcp.isValid()){
                ecmp_group.apply();
             }
             ecmp_nhop.apply();
