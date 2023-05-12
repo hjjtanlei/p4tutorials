@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-from p4runtime_lib.switch import ShutdownAllSwitchConnections
-from p4runtime_lib.error_utils import printGrpcError
-import p4runtime_lib.helper
-import p4runtime_lib.bmv2
 import argparse
 import os
 import sys
@@ -15,6 +11,9 @@ import grpc
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)),
                  '../../utils/'))
+import p4runtime_lib.bmv2
+import p4runtime_lib.helper
+from p4runtime_lib.switch import ShutdownAllSwitchConnections
 
 SWITCH_TO_HOST_PORT = 1
 SWITCH_TO_SWITCH_PORT = 2
