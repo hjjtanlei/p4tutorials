@@ -76,7 +76,7 @@ parser MyParser(packet_in packet,
     }
 
     state parse_srcRouting {
-        packet.extract(hdr.srcRoutes.last);
+        packet.extract(hdr.srcRoutes.next);
         transition select(hdr.srcRoutes.last.bos) {
             0:parse_srcRouting;
             1:parse_ipv4;
